@@ -37,10 +37,11 @@ The image classification now uses a Hugging Face model for NSFW detection.
 Results
 The performance of our text classification models was evaluated using key metrics such as accuracy, precision, recall, and F1 score. The evaluation was conducted on a test set consisting of 4,957 samples (835 labeled as Appropriate and 4,122 labeled as Inappropriate).
 
-Evaluation Metrics
-Metric	LSTM	BERT
-Accuracy	93.65%	95.62%
-Precision	95.97%	97.20%
-Recall	96.41%	97.55%
-F1 Score	96.19%	97.37%
+| Metric    | LSTM   | BERT   |
+|-----------|--------|--------|
+| Accuracy  | 93.65% | 95.62% |
+| Precision | 95.97% | 97.20% |
+| Recall    | 96.41% | 97.55% |
+| F1 Score  | 96.19% | 97.37% |
+
 These results illustrate that both models perform strongly, with the BERT-based model achieving slightly higher metrics overall.
