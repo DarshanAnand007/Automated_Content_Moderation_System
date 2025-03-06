@@ -14,18 +14,16 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 import re
-from google.cloud import vision
-
-client = vision.ImageAnnotatorClient()
 
 app = Flask(__name__)
 
+# ------------------ Text Classification Setup ------------------
 # Load your fine-tuned BERT model and tokenizer
 model = BertForSequenceClassification.from_pretrained('./bert_model/')
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
 stop_words = set(stopwords.words('english'))
-stop_words.add("rt") # adding rt to remove retweet in dataset
+stop_words.add("rt")  # adding rt to remove retweet in dataset
 
 # Removing Emojis
 def remove_entity(raw_text):
@@ -81,11 +79,9 @@ def preprocess(data):
     clean = [remove_noise_symbols(text) for text in clean]
     clean = [stemming(text) for text in clean]
     clean = [remove_stopwords(text) for text in clean]
-
     return clean
 
 def classify_text(text):
-
     # Preprocess text
     text_list = [text]
     preprocessed_text = preprocess(text_list)[0]
@@ -100,7 +96,7 @@ def classify_text(text):
     # Convert logits to probabilities
     probabilities = torch.softmax(logits, dim=1)
     predicted_label = torch.argmax(probabilities, dim=1).item()
-    if predicted_label==0:
+    if predicted_label == 0:
         predicted_label = "Appropriate"
     else:
         predicted_label = "Inappropriate"
@@ -119,18 +115,42 @@ def classify_text(text):
     }
     return response
 
+# ------------------ Image Classification Setup ------------------
+# Use Hugging Face API for image classification
+from transformers import AutoImageProcessor, AutoModelForImageClassification
+
+image_processor = AutoImageProcessor.from_pretrained("Falconsai/nsfw_image_detection")
+image_model = AutoModelForImageClassification.from_pretrained("Falconsai/nsfw_image_detection")
 
 def classify_image(image):
+    # Open the image and ensure it is in RGB format
+    pil_image = Image.open(image).convert("RGB")
+    
+    # Process the image using the Hugging Face processor and model
+    inputs = image_processor(pil_image, return_tensors="pt")
+    outputs = image_model(**inputs)
+    logits = outputs.logits
+    probabilities = torch.softmax(logits, dim=1)
+    
+    predicted_label = torch.argmax(probabilities, dim=1).item()
+    if predicted_label == 0:
+        predicted_label_text = "Appropriate"
+    else:
+        predicted_label_text = "Inappropriate"
+    
+    probability_class_0 = probabilities[0][0].item()
+    probability_class_1 = probabilities[0][1].item()
+    
+    response = {
+        "predicted_class": predicted_label_text,
+        "probabilities": {
+            "appropriate": probability_class_0,
+            "inappropriate": probability_class_1
+        }
+    }
+    return response
 
-    image2 = image.read()
-    vision_image = vision.Image(content=image2)
-    response = client.text_detection(image=vision_image)
-    texts = response.text_annotations
-    detected_text = texts[0].description if texts else 'No text detected'
-
-    return classify_text(detected_text)
-
-
+# ------------------ Flask Routes ------------------
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -146,8 +166,6 @@ def index():
             return jsonify({"error": "Invalid request"}), 400
 
     return render_template('index5.html')
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
