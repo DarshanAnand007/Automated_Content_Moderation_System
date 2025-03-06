@@ -1,41 +1,46 @@
 # Automated Content Moderation System
 
-## Text and Image Content Moderator
 
-This project provides a simple web application to classify text and images as either **Appropriate** or **Inappropriate**. It leverages:
+https://github.com/user-attachments/assets/5aa93360-d553-4d54-89b7-44221c80bd03
 
-- A fine-tuned **BERT** model for text classification.
-- A **Hugging Face NSFW Image Detection** model for image classification.
 
-The Flask-based web interface allows users to enter text or upload an image, then displays the classification results along with probability scores. The UI dynamically colors the results:
-- **Green** for **Appropriate** content.
-- **Red** for **Inappropriate** content.
+## Introduction
 
-![UI Screenshot](https://github.com/user-attachments/assets/3b997cf6-f12a-4470-b348-cb6a7a5ea9d7)
+This project implements an automated content moderation system that classifies textual content as either **Appropriate** or **Inappropriate** for public display. Leveraging advanced machine learning models (LSTM and BERT) and natural language processing techniques, the system analyzes textual data in real-time to provide accurate classification results. Additionally, the project extends its functionality to handle image inputs—extracting content from images and memes and classifying them using a Hugging Face NSFW image detection model.
 
 ---
 
-## Features
+## Files Included
 
-- **Text Classification:** Uses a fine-tuned BERT model to predict if input text is appropriate.
-- **Image Classification:** Utilizes a Hugging Face NSFW model to detect if an image is appropriate.
-- **Interactive Web Interface:** Built with Flask, HTML, CSS, and JavaScript for a user-friendly experience.
-- **Visual Feedback:** Results are presented with color-coded indicators and progress bars that reflect the confidence levels of predictions.
+- **SAFETY TEST(LSTM).ipynb:**  
+  Jupyter notebook for training and evaluating the LSTM model for text classification using the preprocessed data.
+
+- **BERT.ipynb:**  
+  Jupyter notebook for training and evaluating the BERT model for text classification using the preprocessed data.
+
+- **Flask_app/main.py:**  
+  Python file for the Flask application. This file handles both text and image inputs through a web browser, loads the trained BERT model, and leverages a Hugging Face NSFW image detection model for image classification.
+
+- **Flask_app/templates/index5.html:**  
+  HTML page for the Flask application's user interface.
+
+- **Flask_app/app.yaml:**  
+  Configuration file required for deploying the Flask application on Google App Engine.
 
 ---
+Note:
 
-## Installation
+The trained BERT model files are not included in the repository; they need to be trained separately using the provided notebooks.
+Make sure to adjust file paths in the Python files according to your local setup.
+The image classification now uses a Hugging Face model for NSFW detection.
 
-### Prerequisites
+Results
+The performance of our text classification models was evaluated using key metrics such as accuracy, precision, recall, and F1 score. The evaluation was conducted on a test set consisting of 4,957 samples (835 labeled as Appropriate and 4,122 labeled as Inappropriate).
 
-- Python 3.7+
-- `pip` for package management
-- (Optional) A virtual environment (e.g., using `venv` or `conda`)
-
-### Steps to Install
-
-1. **Clone the Repository:**
-
-   ```bash
-   git clone https://github.com/your-username/Automated_Content_Moderation_System.git
-   cd Automated_Content_Moderation_System
+Evaluation Metrics
+Metric	LSTM	BERT
+Accuracy	93.65%	95.62%
+Precision	95.97%	97.20%
+Recall	96.41%	97.55%
+F1 Score	96.19%	97.37%
+These results illustrate that both models perform strongly, with the BERT-based model achieving slightly higher metrics overall.
